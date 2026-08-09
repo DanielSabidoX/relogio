@@ -1,0 +1,42 @@
+{
+  "name": "relogio-desktop",
+  "version": "1.0.0",
+  "description": "Relógio digital estilo 7 segmentos para Windows feito com Electron.",
+  "main": "main.js",
+  "author": "Fabio",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^37.2.6",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "br.fabio.relogiodesktop",
+    "productName": "Relógio Desktop",
+
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "style.css",
+      "renderer.js"
+    ],
+
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Relógio Desktop"
+    }
+  }
+}

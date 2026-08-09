@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relógio Desktop</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="clock-window">
+    <div class="topbar">
+      <div class="brand">RELÓGIO DESKTOP</div>
+      <div class="window-buttons">
+        <button id="settingsBtn">⚙</button>
+        <button id="pinBtn" title="Sempre visível">#</button>
+        <button id="minBtn" title="Minimizar">—</button>
+        <button id="closeBtn" title="Fechar">×</button>
+      </div>
+
+      
+    </div>
+
+    <section class="display">
+
+      <div class="left-panel">
+        <div class="ampm">
+          <span id="am">AM</span>
+          <span id="pm">PM</span>
+        </div>
+
+        <div class="cronometro">
+          <div id="hora" class="seven-row"></div>
+          <div class="colon">:</div>
+          <div id="minuto" class="seven-row"></div>
+          <div class="colon">:</div>
+          <div id="segundo" class="seven-row"></div>
+        </div>
+
+        <div class="days" id="days">
+          <span>DOM</span>
+          <span>SEG</span>
+          <span>TER</span>
+          <span>QUA</span>
+          <span>QUI</span>
+          <span>SEX</span>
+          <span>SAB</span>
+        </div>
+      </div>
+
+      <aside class="info-panel">
+        <div class="date-box">
+          <span id="date"></span>
+        </div>
+
+        <div class="temperature">
+          <span id="temperature">--</span><small>°C</small>
+        </div>
+
+        <div class="controls">
+          <button id="formatBtn">24H</button>
+          <button id="weatherBtn">TEMPO</button>
+        </div>
+      </aside>
+    </section>
+
+<div id="settingsPanel" class="settings-panel">
+
+  <div class="settings-title">
+    CONFIGURAÇÕES
+  </div>
+
+  <label class="setting-item">
+
+    <input
+      type="checkbox"
+      id="startupCheck"
+    >
+
+    <span>
+      Iniciar com o Windows
+    </span>
+
+  </label>
+
+</div>
+
+  </main>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
