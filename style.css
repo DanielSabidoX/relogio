@@ -102,7 +102,6 @@ body {
 }
 
 .display {
-  padding: 10px;
   position: relative;
   z-index: 1;
   display: flex;
@@ -596,3 +595,26 @@ body {
 .resize-handle.resizing {
   opacity: .9;
 }
+
+/* =====================================================
+   MODO LIMPO / SEM BORDAS
+   ===================================================== */
+
+/* esconde tudo que não está "aceso": nome do software, dias que não são
+   hoje, AM/PM inativo e os segmentos apagados dos dígitos. Os botões da
+   janela (config, fixar, minimizar, fechar) continuam visíveis. */
+body.clean-mode .brand { opacity: 0; }
+body.clean-mode .days span:not(.active) { opacity: 0; }
+body.clean-mode .ampm span:not(.active) { opacity: 0; }
+body.clean-mode .seg:not(.on) { opacity: 0; }
+
+/* esconde as bordas/divisórias, mantendo o fundo e o conteúdo */
+body.no-borders .clock-window { border-color: transparent; }
+body.no-borders .topbar {
+  border-bottom-color: transparent;
+  background: transparent;
+}
+body.no-borders .info-panel { border-left-color: transparent; }
+body.no-borders .resize-handle { opacity: .12; }
+body.no-borders .resize-handle:hover,
+body.no-borders .resize-handle.resizing { opacity: .8; }

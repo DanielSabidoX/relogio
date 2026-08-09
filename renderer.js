@@ -14,6 +14,8 @@ const TRANSLATIONS = {
     startup: "Iniciar com o Windows",
     opacity: "Opacidade do fundo",
     activeColor: "Cor dos textos ativos",
+    cleanMode: "Esconder textos inativos",
+    noBorders: "Esconder bordas",
     language: "Idioma",
     weatherBtn: "TEMPO",
     days: ["DOM","SEG","TER","QUA","QUI","SEX","SAB"],
@@ -31,6 +33,8 @@ const TRANSLATIONS = {
     startup: "Start with Windows",
     opacity: "Background opacity",
     activeColor: "Active text color",
+    cleanMode: "Hide inactive texts",
+    noBorders: "Hide borders",
     language: "Language",
     weatherBtn: "WEATHER",
     days: ["SUN","MON","TUE","WED","THU","FRI","SAT"],
@@ -460,6 +464,8 @@ function applyLanguage(lang) {
   document.getElementById("startupLabelText").textContent = dict.startup;
   document.getElementById("opacityLabelText").textContent = dict.opacity;
   document.getElementById("colorLabelText").textContent = dict.activeColor;
+  document.getElementById("cleanLabelText").textContent = dict.cleanMode;
+  document.getElementById("noBorderLabelText").textContent = dict.noBorders;
   document.getElementById("langLabelText").textContent = dict.language;
 
   document.getElementById("weatherBtn").textContent = dict.weatherBtn;
@@ -580,3 +586,30 @@ window.addEventListener("resize", () => {
   clampSettingsPanel();
 });
 updateUiScale();
+
+
+// =====================================================
+// MODO LIMPO (esconder textos inativos) / ESCONDER BORDAS
+// =====================================================
+
+function bindToggle(checkboxId, bodyClass, storageKey) {
+
+  const checkbox = document.getElementById(checkboxId);
+  if (!checkbox) return;
+
+  function apply(enabled) {
+    document.body.classList.toggle(bodyClass, enabled);
+    checkbox.checked = enabled;
+  }
+
+  checkbox.addEventListener("change", (event) => {
+    const enabled = event.target.checked;
+    document.body.classList.toggle(bodyClass, enabled);
+    localStorage.setItem(storageKey, enabled ? "1" : "0");
+  });
+
+  apply(localStorage.getItem(storageKey) === "1");
+}
+
+bindToggle("cleanCheck", "clean-mode", "cleanMode");
+bindToggle("noBorderCheck", "no-borders", "hideBorders");
