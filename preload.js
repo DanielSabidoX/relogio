@@ -29,6 +29,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.send("settings-panel-open"),
 
   notifySettingsClose: () =>
-    ipcRenderer.send("settings-panel-close")
+    ipcRenderer.send("settings-panel-close"),
+
+  resizeWindow: (width, height) =>
+    ipcRenderer.send("window-resize", { width, height })
 
 });

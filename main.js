@@ -114,7 +114,7 @@ ipcMain.on("set-startup", (event, enabled) => {
 // (mantendo o canto superior esquerdo fixo) e devolvemos o tamanho
 // original ao fechar.
 
-const SETTINGS_EXTRA_HEIGHT = 320;
+const SETTINGS_EXTRA_HEIGHT = 220;
 let heightBeforeSettings = null;
 
 ipcMain.on("settings-panel-open", () => {
@@ -139,4 +139,23 @@ ipcMain.on("settings-panel-close", () => {
     height: heightBeforeSettings
   });
   heightBeforeSettings = null;
+});
+
+// =====================================================
+// REDIMENSIONAR MANUALMENTE (alça no canto)
+// =====================================================
+// A janela é frame:false, então não tem a borda nativa de redimensionar
+// do Windows visível/fácil de pegar. A alça no canto (renderer.js) manda
+// o tamanho desejado aqui, e o processo principal ajusta a janela de
+// verdade, respeitando um mínimo e um máximo razoáveis.
+
+const MIN_W = 350, MIN_H = 165;
+const MAX_W = 1400, MAX_H = 640;
+
+ipcMain.on("window-resize", (event, { width, height }) => {
+  if (!win) return;
+  const bounds = win.getBounds();
+  const w = Math.round(Math.min(MAX_W, Math.max(MIN_W, width)));
+  const h = Math.round(Math.min(MAX_H, Math.max(MIN_H, height)));
+  win.setBounds({ x: bounds.x, y: bounds.y, width: w, height: h });
 });

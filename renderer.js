@@ -219,14 +219,43 @@ const settingsPanel =
 const settingsCloseBtn =
   document.getElementById("settingsCloseBtn");
 
+// Mantém o painel sempre visível dentro da janela: mesmo que a janela
+// encolha ou o painel seja arrastado pra fora, ele é puxado de volta.
+function clampSettingsPanel() {
+  if (!settingsPanel.classList.contains("open")) return;
+
+  const rect = settingsPanel.getBoundingClientRect();
+
+  // deixa o painel ser arrastado livremente; só o traz de volta se uma
+  // parte mínima dele (KEEP px) deixar de aparecer na janela
+  const KEEP = 40;
+
+  const minLeft = KEEP - rect.width;
+  const maxLeft = window.innerWidth - KEEP;
+  const minTop  = 0;
+  const maxTop  = window.innerHeight - KEEP;
+
+  const left = Math.min(Math.max(rect.left, minLeft), Math.max(minLeft, maxLeft));
+  const top  = Math.min(Math.max(rect.top,  minTop),  Math.max(minTop,  maxTop));
+
+  settingsPanel.style.left  = left + "px";
+  settingsPanel.style.top   = top + "px";
+  settingsPanel.style.right = "auto";
+}
+
 function openSettings() {
   settingsPanel.classList.add("open");
+  requestAnimationFrame(updateUiScale);
   window.electronAPI.notifySettingsOpen();
+  // a janela cresce logo depois; reposiciona quando isso acontecer
+  requestAnimationFrame(clampSettingsPanel);
+  setTimeout(clampSettingsPanel, 120);
 }
 
 function closeSettings() {
   if (!settingsPanel.classList.contains("open")) return;
   settingsPanel.classList.remove("open");
+  requestAnimationFrame(updateUiScale);
   window.electronAPI.notifySettingsClose();
 }
 
@@ -318,6 +347,7 @@ document.addEventListener("keydown", (event) => {
     if (!dragging) return;
     dragging = false;
     handle.classList.remove("dragging");
+    clampSettingsPanel();
     savePosition();
   }
 
@@ -380,7 +410,7 @@ applyPanelOpacity(initialOpacity);
 // mapa chave -> variável CSS correspondente (definidas em :root no style.css).
 // Pra trocar as cores disponíveis, basta editar os valores de --color-* no CSS.
 const ACTIVE_COLOR_VAR = {
-  white: "--color-white",
+  pink: "--color-pink",
   green: "--color-green",
   red:   "--color-red",
   blue:  "--color-blue"
@@ -389,7 +419,7 @@ const ACTIVE_COLOR_VAR = {
 const colorRadios = document.querySelectorAll('input[name="activeColor"]');
 
 function applyActiveColor(key) {
-  const varName = ACTIVE_COLOR_VAR[key] || ACTIVE_COLOR_VAR.white;
+  const varName = ACTIVE_COLOR_VAR[key] || ACTIVE_COLOR_VAR.pink;
   document.documentElement.style.setProperty("--active-color", `var(${varName})`);
 }
 
@@ -401,7 +431,7 @@ colorRadios.forEach((radio) => {
   });
 });
 
-const savedColorKey = localStorage.getItem("activeColorKey") || "white";
+const savedColorKey = localStorage.getItem("activeColorKey") || "pink";
 const savedColorRadio = document.querySelector(
   `input[name="activeColor"][value="${savedColorKey}"]`
 );
@@ -458,3 +488,95 @@ const savedLangRadio = document.querySelector(
 );
 if (savedLangRadio) savedLangRadio.checked = true;
 applyLanguage(currentLang);
+
+// =====================================================
+// REDIMENSIONAR MANUALMENTE PELA ALÇA NO CANTO
+// =====================================================
+
+(function makeWindowResizable() {
+
+  const handle = document.getElementById("resizeHandle");
+  if (!handle) return;
+
+  let resizing = false;
+  let startX = 0, startY = 0, startW = 0, startH = 0;
+  let pending = null;
+
+  function tick() {
+    if (pending) {
+      window.electronAPI.resizeWindow(pending.w, pending.h);
+      pending = null;
+    }
+    if (resizing) requestAnimationFrame(tick);
+  }
+
+  handle.addEventListener("pointerdown", (event) => {
+    resizing = true;
+    startX = event.clientX;
+    startY = event.clientY;
+    startW = window.innerWidth;
+    startH = window.innerHeight;
+    handle.classList.add("resizing");
+    handle.setPointerCapture(event.pointerId);
+    requestAnimationFrame(tick);
+  });
+
+  handle.addEventListener("pointermove", (event) => {
+    if (!resizing) return;
+    pending = {
+      w: startW + (event.clientX - startX),
+      h: startH + (event.clientY - startY)
+    };
+  });
+
+  function stopResize() {
+    if (!resizing) return;
+    resizing = false;
+    handle.classList.remove("resizing");
+  }
+
+  handle.addEventListener("pointerup", stopResize);
+  handle.addEventListener("pointercancel", stopResize);
+
+})();
+// =====================================================
+// ESCALA ÚNICA DA INTERFACE (--ui-scale)
+// =====================================================
+// Em vez de cada elemento ter seu próprio clamp()/vw (o que fazia uns
+// baterem no limite antes dos outros e saírem de proporção), existe um
+// único fator: --ui-scale. Todo tamanho em style.css é
+// calc(var(--ui-scale) * base_px), então tudo cresce/encolhe junto.
+//
+// Detalhe importante: quando o painel de configurações abre, o processo
+// principal aumenta a altura da janela em SETTINGS_EXTRA_HEIGHT. Esse
+// crescimento é temporário e não deve mudar o tamanho do relógio — por
+// isso descontamos esse extra da altura usada no cálculo.
+
+const UI_BASE_WIDTH  = 540;
+const UI_BASE_HEIGHT = 215;
+const SETTINGS_EXTRA_HEIGHT = 220;
+
+function updateUiScale() {
+
+  const settingsOpen =
+    settingsPanel.classList.contains("open");
+
+  const usableHeight =
+    window.innerHeight - (settingsOpen ? SETTINGS_EXTRA_HEIGHT : 0);
+
+  const scale = Math.min(
+    window.innerWidth / UI_BASE_WIDTH,
+    Math.max(1, usableHeight) / UI_BASE_HEIGHT
+  );
+
+  document.documentElement.style.setProperty(
+    "--ui-scale",
+    String(Math.max(0.5, Math.min(3, scale)))
+  );
+}
+
+window.addEventListener("resize", () => {
+  updateUiScale();
+  clampSettingsPanel();
+});
+updateUiScale();

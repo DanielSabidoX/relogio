@@ -1,13 +1,18 @@
 :root {
   /* Paleta das cores selecionáveis para os textos ativos do painel.
      Troque os valores aqui se quiser usar outras cores no lugar. */
-  --color-white: #f2f4f6;
+  --color-pink: #FF8DA1;
   --color-green: #33e07a;
   --color-red:   #ff3333;
   --color-blue:  #3aa0ff;
 
   /* Cor ativa em uso — trocada em runtime pelo seletor nas Configurações */
-  --active-color: var(--color-white);
+  --active-color: var(--color-pink);
+
+  /* Fator único de escala da interface, recalculado em JS conforme o
+     tamanho real da janela. Todo texto/dígito é tamanho-base × escala,
+     então tudo cresce e encolhe exatamente na mesma proporção. */
+  --ui-scale: 1;
 }
 
 * {
@@ -97,6 +102,7 @@ body {
 }
 
 .display {
+  padding: 10px;
   position: relative;
   z-index: 1;
   display: flex;
@@ -115,9 +121,9 @@ body {
   top: 3px;
   display: flex;
   flex-direction: column;
-  gap: 56px;
+  gap: calc(var(--ui-scale) * 56px);
   color: #3d4145;
-  font-size: 12px;
+  font-size: calc(var(--ui-scale) * 12px);
   font-weight: 900;
   z-index: 3;
 }
@@ -141,15 +147,15 @@ body {
   flex-direction:row;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: calc(var(--ui-scale) * 10px);
   height: 46%;
   filter: drop-shadow(0 0 5px rgba(255,255,255,.05));
 }
 
 .digit {
   position: relative;
-  width: clamp(44px, 7vw, 75px);
-  height: clamp(81px, 13.2vw, 132px);
+  width: calc(var(--ui-scale) * 44px);
+  height: calc(var(--ui-scale) * 81px);
 }
 
 .seg {
@@ -186,18 +192,18 @@ body {
 .c { right: 2%; bottom: 5%; }
 
 .colon {
-  width: 16px;
+  width: calc(var(--ui-scale) * 16px);
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 28px;
+  gap: calc(var(--ui-scale) * 28px);
 }
 
 .colon span {
-  width: 13px;
-  height: 13px;
+  width: calc(var(--ui-scale) * 13px);
+  height: calc(var(--ui-scale) * 13px);
   border-radius: 50%;
   background: var(--active-color);
   box-shadow: 0 0 9px color-mix(in srgb, var(--active-color) 45%, transparent);
@@ -208,7 +214,7 @@ body {
   margin-top: 10px;
   display: flex;
   justify-content: space-between;
-  font-size: clamp(9px, 1.4vw, 17px);
+  font-size: calc(var(--ui-scale) * 9px);
   font-weight: 900;
   font-style: italic;
   color: #aeb2b6;
@@ -232,7 +238,7 @@ body {
 }
 
 .date-box {
-  font-size: 15px;
+  font-size: calc(var(--ui-scale) * 11px);
   font-weight: 800;
   color: var(--active-color);
   letter-spacing: 1px;
@@ -243,7 +249,7 @@ body {
 .temperature {
   font-family: "Courier New", monospace;
   font-weight: 900;
-  font-size: 45px;
+  font-size: calc(var(--ui-scale) * 28px);
   text-align: center;
   color: var(--active-color);
   text-shadow: 0 0 12px color-mix(in srgb, var(--active-color) 35%, transparent);
@@ -252,7 +258,7 @@ body {
 }
 
 .temperature small {
-  font-size: 18px;
+  font-size: calc(var(--ui-scale) * 12px);
   color: var(--active-color);
 }
 
@@ -268,19 +274,6 @@ body {
   font-size: 10px;
 }
 
-@media (max-width: 780px) {
-  .display {
-    grid-template-columns: 1fr 105px;
-    padding: 12px;
-  }
-  .info-panel {
-    padding-left: 8px;
-  }
-  .temperature {
-    font-size: 30px;
-  }
-}
-
 /* =====================================================
    PAINEL DE CONFIGURAÇÕES
    ===================================================== */
@@ -292,12 +285,12 @@ body {
   position: fixed;
   z-index: 100;
 
-  top: 50px;
-  right: 125px;
+  top: 44px;
+  right: 12px;
 
-  width: 210px;
+  width: 168px;
 
-  padding: 12px;
+  padding: 9px;
 
   border-radius: 10px;
 
@@ -329,12 +322,12 @@ body {
   align-items: center;
   justify-content: space-between;
 
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 
   border-bottom:
     1px solid rgba(255,255,255,.08);
 
-  padding-bottom: 7px;
+  padding-bottom: 5px;
 
   cursor: grab;
   touch-action: none;
@@ -346,7 +339,7 @@ body {
 
 .settings-title {
 
-  font-size: 9px;
+  font-size: 8px;
 
   font-weight: 900;
 
@@ -384,19 +377,19 @@ body {
 
   align-items: center;
 
-  gap: 8px;
+  gap: 7px;
 
-  padding: 7px 0;
+  padding: 4px 0;
 
-  font-size: 10px;
+  font-size: 9px;
 
   cursor: pointer;
 }
 
 .setting-item input {
 
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
 
   accent-color: #ff3333;
 
@@ -484,12 +477,12 @@ body {
 
   flex-direction: column;
   align-items: stretch;
-  gap: 8px;
+  gap: 6px;
   cursor: default;
 }
 
 .setting-colors-label {
-  font-size: 10px;
+  font-size: 9px;
 }
 
 .color-options {
@@ -513,8 +506,8 @@ body {
 
 .swatch-dot {
   display: block;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: var(--swatch-color);
   opacity: .32;
@@ -538,7 +531,7 @@ body {
 
   flex-direction: column;
   align-items: stretch;
-  gap: 8px;
+  gap: 6px;
   cursor: default;
 }
 
@@ -563,11 +556,11 @@ body {
 .lang-pill-text {
   display: block;
   text-align: center;
-  padding: 6px 0;
+  padding: 4px 0;
   border-radius: 6px;
   background: rgba(255,255,255,.05);
   color: #6b6f73;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
   letter-spacing: .5px;
   border: 1px solid transparent;
@@ -582,4 +575,24 @@ body {
   background: rgba(255,255,255,.12);
   color: white;
   border-color: rgba(255,255,255,.28);
+}
+
+.resize-handle {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 16px;
+  height: 16px;
+  z-index: 10;
+  cursor: nwse-resize;
+  -webkit-app-region: no-drag;
+  background:
+    linear-gradient(135deg, transparent 0 40%, rgba(255,255,255,.35) 40% 46%, transparent 46% 60%, rgba(255,255,255,.35) 60% 66%, transparent 66% 80%, rgba(255,255,255,.35) 80% 86%, transparent 86%);
+  opacity: .45;
+  transition: opacity .15s ease;
+}
+
+.resize-handle:hover,
+.resize-handle.resizing {
+  opacity: .9;
 }
