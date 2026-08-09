@@ -187,3 +187,30 @@ document
     );
 
   });
+
+// =====================================================
+// OPACIDADE DO FUNDO DO PAINEL
+// =====================================================
+
+const opacityRange = document.getElementById("opacityRange");
+const opacityValue  = document.getElementById("opacityValue");
+
+function applyPanelOpacity(value) {
+  document.documentElement.style.setProperty(
+    "--panel-opacity",
+    value / 100
+  );
+  opacityValue.textContent = value + "%";
+}
+
+opacityRange.addEventListener("input", (event) => {
+  const value = Number(event.target.value);
+  applyPanelOpacity(value);
+  localStorage.setItem("panelOpacity", value);
+});
+
+// restaura a preferência salva (se houver) ao abrir o app
+const savedOpacity = localStorage.getItem("panelOpacity");
+const initialOpacity = savedOpacity !== null ? Number(savedOpacity) : 100;
+opacityRange.value = initialOpacity;
+applyPanelOpacity(initialOpacity);

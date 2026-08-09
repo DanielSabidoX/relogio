@@ -8,6 +8,7 @@
 </head>
 <body>
   <main class="clock-window">
+    <div class="bg-fill"></div>
     <div class="topbar">
       <div class="brand">RELÓGIO DESKTOP</div>
       <div class="window-buttons">
@@ -81,6 +82,24 @@
     </span>
 
   </label>
+
+  <div class="setting-item setting-slider">
+
+    <div class="setting-slider-row">
+      <span>Opacidade do fundo</span>
+      <span id="opacityValue">100%</span>
+    </div>
+
+    <input
+      type="range"
+      id="opacityRange"
+      min="0"
+      max="100"
+      value="100"
+      step="1"
+    >
+
+  </div>
 
 </div>
 
