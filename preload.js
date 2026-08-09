@@ -23,6 +23,12 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("get-startup-state"),
 
   setStartup: (enabled) =>
-    ipcRenderer.send("set-startup", enabled)
+    ipcRenderer.send("set-startup", enabled),
+
+  notifySettingsOpen: () =>
+    ipcRenderer.send("settings-panel-open"),
+
+  notifySettingsClose: () =>
+    ipcRenderer.send("settings-panel-close")
 
 });

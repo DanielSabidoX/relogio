@@ -162,21 +162,125 @@ const settingsBtn =
 const settingsPanel =
   document.getElementById("settingsPanel");
 
+const settingsCloseBtn =
+  document.getElementById("settingsCloseBtn");
+
+function openSettings() {
+  settingsPanel.classList.add("open");
+  window.electronAPI.notifySettingsOpen();
+}
+
+function closeSettings() {
+  if (!settingsPanel.classList.contains("open")) return;
+  settingsPanel.classList.remove("open");
+  window.electronAPI.notifySettingsClose();
+}
+
 settingsBtn.addEventListener("click", async () => {
 
-  settingsPanel.classList.toggle("open");
-
   if (settingsPanel.classList.contains("open")) {
+    closeSettings();
+    return;
+  }
 
-    const startup =
-      await window.electronAPI.getStartupState();
+  openSettings();
 
-    document.getElementById("startupCheck").checked =
-      startup;
+  const startup =
+    await window.electronAPI.getStartupState();
 
+  document.getElementById("startupCheck").checked =
+    startup;
+
+});
+
+// botão "×" no cabeçalho do painel
+settingsCloseBtn.addEventListener("click", closeSettings);
+
+// clique fora do painel (e fora do botão de engrenagem) fecha
+document.addEventListener("click", (event) => {
+
+  if (!settingsPanel.classList.contains("open")) return;
+
+  const clickedInsidePanel = settingsPanel.contains(event.target);
+  const clickedGearButton = settingsBtn.contains(event.target);
+
+  if (!clickedInsidePanel && !clickedGearButton) {
+    closeSettings();
   }
 
 });
+
+// tecla Esc também fecha
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeSettings();
+});
+
+// =====================================================
+// ARRASTAR O PAINEL DE CONFIGURAÇÕES PELO CABEÇALHO
+// =====================================================
+
+(function makeSettingsPanelDraggable() {
+
+  const handle = document.querySelector(".settings-title-row");
+  let dragging = false;
+  let startX = 0, startY = 0, originLeft = 0, originTop = 0;
+
+  function savePosition() {
+    try {
+      localStorage.setItem("settingsPanelPos", JSON.stringify({
+        left: parseFloat(settingsPanel.style.left) || 0,
+        top:  parseFloat(settingsPanel.style.top)  || 0
+      }));
+    } catch (e) {}
+  }
+
+  handle.addEventListener("pointerdown", (event) => {
+    if (settingsCloseBtn.contains(event.target)) return;
+
+    const rect = settingsPanel.getBoundingClientRect();
+    settingsPanel.style.left = rect.left + "px";
+    settingsPanel.style.top  = rect.top + "px";
+    settingsPanel.style.right = "auto";
+
+    dragging = true;
+    startX = event.clientX;
+    startY = event.clientY;
+    originLeft = rect.left;
+    originTop  = rect.top;
+
+    handle.classList.add("dragging");
+    handle.setPointerCapture(event.pointerId);
+  });
+
+  handle.addEventListener("pointermove", (event) => {
+    if (!dragging) return;
+    const dx = event.clientX - startX;
+    const dy = event.clientY - startY;
+    settingsPanel.style.left = (originLeft + dx) + "px";
+    settingsPanel.style.top  = (originTop + dy) + "px";
+  });
+
+  function stopDrag() {
+    if (!dragging) return;
+    dragging = false;
+    handle.classList.remove("dragging");
+    savePosition();
+  }
+
+  handle.addEventListener("pointerup", stopDrag);
+  handle.addEventListener("pointercancel", stopDrag);
+
+  // restaura a última posição em que o painel foi arrastado
+  try {
+    const saved = JSON.parse(localStorage.getItem("settingsPanelPos"));
+    if (saved && typeof saved.left === "number") {
+      settingsPanel.style.left = saved.left + "px";
+      settingsPanel.style.top  = saved.top + "px";
+      settingsPanel.style.right = "auto";
+    }
+  } catch (e) {}
+
+})();
 
 document
   .getElementById("startupCheck")
@@ -222,7 +326,7 @@ applyPanelOpacity(initialOpacity);
 // mapa chave -> variável CSS correspondente (definidas em :root no style.css).
 // Pra trocar as cores disponíveis, basta editar os valores de --color-* no CSS.
 const ACTIVE_COLOR_VAR = {
-  white: "--color-white",
+  pink: "--color-pink",
   green: "--color-green",
   red:   "--color-red",
   blue:  "--color-blue"
@@ -231,7 +335,7 @@ const ACTIVE_COLOR_VAR = {
 const colorRadios = document.querySelectorAll('input[name="activeColor"]');
 
 function applyActiveColor(key) {
-  const varName = ACTIVE_COLOR_VAR[key] || ACTIVE_COLOR_VAR.white;
+  const varName = ACTIVE_COLOR_VAR[key] || ACTIVE_COLOR_VAR.pink;
   document.documentElement.style.setProperty("--active-color", `var(${varName})`);
 }
 
@@ -243,7 +347,7 @@ colorRadios.forEach((radio) => {
   });
 });
 
-const savedColorKey = localStorage.getItem("activeColorKey") || "white";
+const savedColorKey = localStorage.getItem("activeColorKey") || "pink";
 const savedColorRadio = document.querySelector(
   `input[name="activeColor"][value="${savedColorKey}"]`
 );

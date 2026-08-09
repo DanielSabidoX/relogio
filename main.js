@@ -104,3 +104,39 @@ ipcMain.on("set-startup", (event, enabled) => {
   });
 
 });
+
+// =====================================================
+// EXPANDIR A JANELA PARA CABER O PAINEL DE CONFIGURAÇÕES
+// =====================================================
+// A janela normal é baixinha (só o relógio). Quando o painel de
+// configurações abre, ele precisa de mais espaço vertical pra não ser
+// cortado pela borda da própria janela — então crescemos a janela
+// (mantendo o canto superior esquerdo fixo) e devolvemos o tamanho
+// original ao fechar.
+
+const SETTINGS_EXTRA_HEIGHT = 320;
+let heightBeforeSettings = null;
+
+ipcMain.on("settings-panel-open", () => {
+  if (!win) return;
+  const bounds = win.getBounds();
+  if (heightBeforeSettings === null) heightBeforeSettings = bounds.height;
+  win.setBounds({
+    x: bounds.x,
+    y: bounds.y,
+    width: bounds.width,
+    height: bounds.height + SETTINGS_EXTRA_HEIGHT
+  });
+});
+
+ipcMain.on("settings-panel-close", () => {
+  if (!win || heightBeforeSettings === null) return;
+  const bounds = win.getBounds();
+  win.setBounds({
+    x: bounds.x,
+    y: bounds.y,
+    width: bounds.width,
+    height: heightBeforeSettings
+  });
+  heightBeforeSettings = null;
+});

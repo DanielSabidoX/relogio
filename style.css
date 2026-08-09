@@ -1,13 +1,13 @@
 :root {
   /* Paleta das cores selecionáveis para os textos ativos do painel.
      Troque os valores aqui se quiser usar outras cores no lugar. */
-  --color-white: #f2f4f6;
+  --color-pink: #e8a2d9;
   --color-green: #33e07a;
   --color-red:   #ff3333;
   --color-blue:  #3aa0ff;
 
   /* Cor ativa em uso — trocada em runtime pelo seletor nas Configurações */
-  --active-color: var(--color-white);
+  --active-color: var(--color-pink);
 }
 
 * {
@@ -287,11 +287,13 @@ body {
 
 .settings-panel {
 
-  position: absolute;
-  z-index: 5;
+  /* fixed (não absolute) para não ser cortado pelo overflow:hidden
+     do .clock-window — assim ele flutua por cima de tudo de verdade */
+  position: fixed;
+  z-index: 100;
 
-  top: 40px;
-  right: 115px;
+  top: 50px;
+  right: 125px;
 
   width: 210px;
 
@@ -312,8 +314,6 @@ body {
     0 10px 30px rgba(0,0,0,.65),
     inset 0 1px 0 rgba(255,255,255,.08);
 
-  z-index: 100;
-
   color: #ddd;
 
   display: none;
@@ -321,6 +321,27 @@ body {
 
 .settings-panel.open {
   display: block;
+}
+
+.settings-title-row {
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 12px;
+
+  border-bottom:
+    1px solid rgba(255,255,255,.08);
+
+  padding-bottom: 7px;
+
+  cursor: grab;
+  touch-action: none;
+}
+
+.settings-title-row.dragging {
+  cursor: grabbing;
 }
 
 .settings-title {
@@ -332,21 +353,43 @@ body {
   letter-spacing: 1.5px;
 
   color: #888d92;
+}
 
-  margin-bottom: 12px;
+.settings-close {
 
-  border-bottom:
-    1px solid rgba(255,255,255,.08);
+  border: 0;
+  background: rgba(255,255,255,.06);
+  color: #aaa;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border-radius: 5px;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
 
-  padding-bottom: 7px;
+.settings-close:hover {
+  background: rgba(255,255,255,.16);
+  color: white;
 }
 
 .setting-item {
+
   display: flex;
+
   align-items: center;
+
   gap: 8px;
+
   padding: 7px 0;
+
   font-size: 10px;
+
   cursor: pointer;
 }
 
