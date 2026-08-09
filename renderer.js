@@ -214,3 +214,38 @@ const savedOpacity = localStorage.getItem("panelOpacity");
 const initialOpacity = savedOpacity !== null ? Number(savedOpacity) : 100;
 opacityRange.value = initialOpacity;
 applyPanelOpacity(initialOpacity);
+
+// =====================================================
+// COR DOS TEXTOS ATIVOS (branco / verde / vermelho / azul)
+// =====================================================
+
+// mapa chave -> variável CSS correspondente (definidas em :root no style.css).
+// Pra trocar as cores disponíveis, basta editar os valores de --color-* no CSS.
+const ACTIVE_COLOR_VAR = {
+  white: "--color-white",
+  green: "--color-green",
+  red:   "--color-red",
+  blue:  "--color-blue"
+};
+
+const colorRadios = document.querySelectorAll('input[name="activeColor"]');
+
+function applyActiveColor(key) {
+  const varName = ACTIVE_COLOR_VAR[key] || ACTIVE_COLOR_VAR.white;
+  document.documentElement.style.setProperty("--active-color", `var(${varName})`);
+}
+
+colorRadios.forEach((radio) => {
+  radio.addEventListener("change", (event) => {
+    if (!event.target.checked) return;
+    applyActiveColor(event.target.value);
+    localStorage.setItem("activeColorKey", event.target.value);
+  });
+});
+
+const savedColorKey = localStorage.getItem("activeColorKey") || "white";
+const savedColorRadio = document.querySelector(
+  `input[name="activeColor"][value="${savedColorKey}"]`
+);
+if (savedColorRadio) savedColorRadio.checked = true;
+applyActiveColor(savedColorKey);
