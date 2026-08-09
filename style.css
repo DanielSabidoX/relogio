@@ -1,13 +1,13 @@
 :root {
   /* Paleta das cores selecionáveis para os textos ativos do painel.
      Troque os valores aqui se quiser usar outras cores no lugar. */
-  --color-pink: #e8a2d9;
+  --color-white: #f2f4f6;
   --color-green: #33e07a;
   --color-red:   #ff3333;
   --color-blue:  #3aa0ff;
 
   /* Cor ativa em uso — trocada em runtime pelo seletor nas Configurações */
-  --active-color: var(--color-pink);
+  --active-color: var(--color-white);
 }
 
 * {
@@ -532,4 +532,54 @@ body {
   transform: scale(1.15);
   border-color: rgba(255,255,255,.75);
   box-shadow: 0 0 8px var(--swatch-color);
+}
+
+.setting-lang {
+
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  cursor: default;
+}
+
+.lang-options {
+  display: flex;
+  gap: 8px;
+}
+
+.lang-pill {
+  flex: 1;
+  cursor: pointer;
+}
+
+.lang-pill input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lang-pill-text {
+  display: block;
+  text-align: center;
+  padding: 6px 0;
+  border-radius: 6px;
+  background: rgba(255,255,255,.05);
+  color: #6b6f73;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  border: 1px solid transparent;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.lang-pill:hover .lang-pill-text {
+  color: #ccc;
+}
+
+.lang-pill input:checked + .lang-pill-text {
+  background: rgba(255,255,255,.12);
+  color: white;
+  border-color: rgba(255,255,255,.28);
 }

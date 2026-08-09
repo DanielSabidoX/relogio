@@ -1,3 +1,58 @@
+// =====================================================
+// TRADUÇÕES
+// =====================================================
+
+const TRANSLATIONS = {
+  "pt-br": {
+    docTitle: "Relógio Desktop",
+    brand: "RELÓGIO DESKTOP",
+    pinTitle: "Sempre visível",
+    minTitle: "Minimizar",
+    closeTitle: "Fechar",
+    settingsTitle: "CONFIGURAÇÕES",
+    settingsCloseTitle: "Fechar",
+    startup: "Iniciar com o Windows",
+    opacity: "Opacidade do fundo",
+    activeColor: "Cor dos textos ativos",
+    language: "Idioma",
+    weatherBtn: "TEMPO",
+    days: ["DOM","SEG","TER","QUA","QUI","SEX","SAB"],
+    tempUnit: "°C",
+    weatherUnitParam: "celsius"
+  },
+  "en-us": {
+    docTitle: "Desktop Clock",
+    brand: "DESKTOP CLOCK",
+    pinTitle: "Always on top",
+    minTitle: "Minimize",
+    closeTitle: "Close",
+    settingsTitle: "SETTINGS",
+    settingsCloseTitle: "Close",
+    startup: "Start with Windows",
+    opacity: "Background opacity",
+    activeColor: "Active text color",
+    language: "Language",
+    weatherBtn: "WEATHER",
+    days: ["SUN","MON","TUE","WED","THU","FRI","SAT"],
+    tempUnit: "°F",
+    weatherUnitParam: "fahrenheit"
+  }
+};
+
+let currentLang = localStorage.getItem("appLanguage") || "pt-br";
+
+function t() {
+  return TRANSLATIONS[currentLang] || TRANSLATIONS["pt-br"];
+}
+
+function formatDate(now) {
+  const dd = String(now.getDate()).padStart(2, "0");
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const yyyy = now.getFullYear();
+  // pt-br: dd/mm/aaaa   |   en-us: mm/dd/aaaa
+  return currentLang === "en-us" ? `${mm}/${dd}/${yyyy}` : `${dd}/${mm}/${yyyy}`;
+}
+
 const segments = {
   0: ["a","b","c","d","e","f"],
   1: ["b","c"],
@@ -67,13 +122,11 @@ function updateClock() {
   renderRow("minuto", m);
   renderRow("segundo", s);
     
-  const dayNames = ["DOM","SEG","TER","QUA","QUI","SEX","SAB"];
   document.querySelectorAll("#days span").forEach((el, i) => {
     el.classList.toggle("active", i === now.getDay());
   });
 
-  const date = `${String(now.getDate()).padStart(2,"0")}/${String(now.getMonth()+1).padStart(2,"0")}/${now.getFullYear()}`;
-  document.getElementById("date").textContent = date;
+  document.getElementById("date").textContent = formatDate(now);
 }
 
 async function updateWeather() {
@@ -88,6 +141,7 @@ async function updateWeather() {
       "?latitude=-3.7319" +
       "&longitude=-38.5267" +
       "&current=temperature_2m" +
+      "&temperature_unit=" + t().weatherUnitParam +
       "&timezone=America%2FFortaleza";
 
     console.log("Consultando Open-Meteo...");
@@ -113,7 +167,7 @@ async function updateWeather() {
 
     console.log(
       "Temperatura:",
-      temperature + "°C"
+      temperature + t().tempUnit
     );
 
   } catch (error) {
@@ -326,7 +380,7 @@ applyPanelOpacity(initialOpacity);
 // mapa chave -> variável CSS correspondente (definidas em :root no style.css).
 // Pra trocar as cores disponíveis, basta editar os valores de --color-* no CSS.
 const ACTIVE_COLOR_VAR = {
-  pink: "--color-pink",
+  white: "--color-white",
   green: "--color-green",
   red:   "--color-red",
   blue:  "--color-blue"
@@ -335,7 +389,7 @@ const ACTIVE_COLOR_VAR = {
 const colorRadios = document.querySelectorAll('input[name="activeColor"]');
 
 function applyActiveColor(key) {
-  const varName = ACTIVE_COLOR_VAR[key] || ACTIVE_COLOR_VAR.pink;
+  const varName = ACTIVE_COLOR_VAR[key] || ACTIVE_COLOR_VAR.white;
   document.documentElement.style.setProperty("--active-color", `var(${varName})`);
 }
 
@@ -347,9 +401,60 @@ colorRadios.forEach((radio) => {
   });
 });
 
-const savedColorKey = localStorage.getItem("activeColorKey") || "pink";
+const savedColorKey = localStorage.getItem("activeColorKey") || "white";
 const savedColorRadio = document.querySelector(
   `input[name="activeColor"][value="${savedColorKey}"]`
 );
 if (savedColorRadio) savedColorRadio.checked = true;
 applyActiveColor(savedColorKey);
+
+// =====================================================
+// IDIOMA (PT-BR / EN-US)
+// =====================================================
+
+function applyLanguage(lang) {
+  currentLang = lang;
+  const dict = t();
+
+  document.title = dict.docTitle;
+  document.documentElement.lang = lang === "en-us" ? "en" : "pt-BR";
+
+  document.getElementById("brandText").textContent = dict.brand;
+  document.getElementById("pinBtn").title = dict.pinTitle;
+  document.getElementById("minBtn").title = dict.minTitle;
+  document.getElementById("closeBtn").title = dict.closeTitle;
+
+  document.getElementById("settingsTitleText").textContent = dict.settingsTitle;
+  settingsCloseBtn.title = dict.settingsCloseTitle;
+
+  document.getElementById("startupLabelText").textContent = dict.startup;
+  document.getElementById("opacityLabelText").textContent = dict.opacity;
+  document.getElementById("colorLabelText").textContent = dict.activeColor;
+  document.getElementById("langLabelText").textContent = dict.language;
+
+  document.getElementById("weatherBtn").textContent = dict.weatherBtn;
+  document.getElementById("tempUnit").textContent = dict.tempUnit;
+
+  document.querySelectorAll("#days span").forEach((el, i) => {
+    el.textContent = dict.days[i];
+  });
+
+  updateClock();
+  updateWeather();
+}
+
+const langRadios = document.querySelectorAll('input[name="appLanguage"]');
+
+langRadios.forEach((radio) => {
+  radio.addEventListener("change", (event) => {
+    if (!event.target.checked) return;
+    applyLanguage(event.target.value);
+    localStorage.setItem("appLanguage", event.target.value);
+  });
+});
+
+const savedLangRadio = document.querySelector(
+  `input[name="appLanguage"][value="${currentLang}"]`
+);
+if (savedLangRadio) savedLangRadio.checked = true;
+applyLanguage(currentLang);

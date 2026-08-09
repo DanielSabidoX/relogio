@@ -10,7 +10,7 @@
   <main class="clock-window">
     <div class="bg-fill"></div>
     <div class="topbar">
-      <div class="brand">RELÓGIO DESKTOP</div>
+      <div class="brand" id="brandText">RELÓGIO DESKTOP</div>
       <div class="window-buttons">
         <button id="settingsBtn">⚙</button>
         <button id="pinBtn" title="Sempre visível">#</button>
@@ -54,7 +54,7 @@
         </div>
 
         <div class="temperature">
-          <span id="temperature">--</span><small>°C</small>
+          <span id="temperature">--</span><small id="tempUnit">°C</small>
         </div>
 
         <div class="controls">
@@ -67,7 +67,7 @@
 <div id="settingsPanel" class="settings-panel">
 
   <div class="settings-title-row">
-    <span class="settings-title">CONFIGURAÇÕES</span>
+    <span class="settings-title" id="settingsTitleText">CONFIGURAÇÕES</span>
     <button id="settingsCloseBtn" class="settings-close" title="Fechar" type="button">×</button>
   </div>
 
@@ -78,7 +78,7 @@
       id="startupCheck"
     >
 
-    <span>
+    <span id="startupLabelText">
       Iniciar com o Windows
     </span>
 
@@ -87,7 +87,7 @@
   <div class="setting-item setting-slider">
 
     <div class="setting-slider-row">
-      <span>Opacidade do fundo</span>
+      <span id="opacityLabelText">Opacidade do fundo</span>
       <span id="opacityValue">100%</span>
     </div>
 
@@ -104,13 +104,13 @@
 
   <div class="setting-item setting-colors">
 
-    <span class="setting-colors-label">Cor dos textos ativos</span>
+    <span class="setting-colors-label" id="colorLabelText">Cor dos textos ativos</span>
 
     <div class="color-options">
 
       <label class="color-swatch">
-        <input type="radio" name="activeColor" value="pink" checked>
-        <span class="swatch-dot" style="--swatch-color: var(--color-pink);"></span>
+        <input type="radio" name="activeColor" value="white" checked>
+        <span class="swatch-dot" style="--swatch-color: var(--color-white);"></span>
       </label>
 
       <label class="color-swatch">
@@ -126,6 +126,26 @@
       <label class="color-swatch">
         <input type="radio" name="activeColor" value="blue">
         <span class="swatch-dot" style="--swatch-color: var(--color-blue);"></span>
+      </label>
+
+    </div>
+
+  </div>
+
+  <div class="setting-item setting-lang">
+
+    <span id="langLabelText">Idioma</span>
+
+    <div class="lang-options">
+
+      <label class="lang-pill">
+        <input type="radio" name="appLanguage" value="pt-br" checked>
+        <span class="lang-pill-text">PT-BR</span>
+      </label>
+
+      <label class="lang-pill">
+        <input type="radio" name="appLanguage" value="en-us">
+        <span class="lang-pill-text">EN-US</span>
       </label>
 
     </div>
